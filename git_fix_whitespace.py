@@ -37,7 +37,14 @@ def main():
         else:
             config_whitespace[c] = True
 
-    print config_whitespace
+    head_diff = git_repo.head.commit.diff(create_patch=True)
+    head_add_diff = head_diff.iter_change_type('A')
+    head_mod_diff = head_diff.iter_change_type('M')
+    for diff in head_add_diff:
+        print diff.diff
+
+    for diff in head_mod_diff:
+        print diff.diff
 
 
 if __name__ == '__main__':
