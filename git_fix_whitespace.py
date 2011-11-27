@@ -1,6 +1,58 @@
 #!/usr/bin/env python
+import os
+import re
+
 from git import Repo
 from git.cmd import Git
+
+
+LINE_INFO_REGEX = re.compile(r'\+(\d+),(\d+)')
+PATH_INFO_REGEX = re.compile(r'b/(.+)')
+
+
+def sanitize_diff(git_diff):
+    '''Sanitize lines in diff
+
+    Only files add or modify are sanitized.
+    '''
+    if git_diff.deleted_file or git_diff.renamed:
+        #TODO: Verify this checker
+        return
+
+    _patch = git_diff.diff.split('\n')
+    file_path_info = _patch[1]
+    line_info = _patch[2]
+    lines = _patch[3:]
+
+    m = LINE_INFO_REGEX.search(line_info)
+    if not m:
+        # Cannot find line_start, line_count
+        return
+    line_start, line_count = m.group(1), m.group(2)
+
+    m = PATH_INFO_REGEX.search(file_path_info)
+    if not m:
+        # Cannot find file path of working file
+        return
+    file_path = m.group(1)
+    backup_path = '%s.bak' % file_path
+    print file_path, line_start, line_count
+    print '\n'.join(lines)
+
+    os.rename(file_path, backup_path)
+    raw_fileobj = open(backup_path, 'rb')
+    working_fd = os.open(file_path, os.O_CREAT | os.O_WRONLY | os.O_TRUNC,
+                         os.fstat(raw_fileobj.fileno()).st_mode)
+    working_fileobj = os.fdopen(working_fd, 'wb')
+
+    line_no = 0
+    for line in raw_fileobj:
+        # TODO: if line_no == line_start, see if we need to sanitize the line
+        working_fileobj.write(line)
+        line_no += 1
+
+    raw_fileobj.close()
+    working_fileobj.close()
 
 
 def main():
@@ -38,13 +90,11 @@ def main():
             config_whitespace[c] = True
 
     head_diff = git_repo.head.commit.diff(create_patch=True)
-    head_add_diff = head_diff.iter_change_type('A')
-    head_mod_diff = head_diff.iter_change_type('M')
-    for diff in head_add_diff:
-        print diff.diff
+    head_diff_add = head_diff.iter_change_type('A')
+    head_diff_modify = head_diff.iter_change_type('M')
 
-    for diff in head_mod_diff:
-        print diff.diff
+    map(sanitize_diff, head_diff_add)
+    map(sanitize_diff, head_diff_modify)
 
 
 if __name__ == '__main__':
