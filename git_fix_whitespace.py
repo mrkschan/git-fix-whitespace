@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import itertools
 import os
 import re
 
@@ -105,8 +106,8 @@ def main():
     head_diff_add = head_diff.iter_change_type('A')
     head_diff_modify = head_diff.iter_change_type('M')
 
-    map(lambda i: sanitize_diff(i, git_root), head_diff_add)
-    map(lambda i: sanitize_diff(i, git_root), head_diff_modify)
+    map(lambda i: sanitize_diff(i, git_root),
+        itertools.chain(head_diff_add, head_diff_modify))
 
 
 if __name__ == '__main__':
