@@ -15,7 +15,7 @@ def sanitize_line(line):
     return line
 
 
-def sanitize_diff(git_diff):
+def sanitize_diff(git_diff, git_root):
     '''Sanitize lines in diff
 
     Only files add or modify are sanitized.
@@ -33,8 +33,7 @@ def sanitize_diff(git_diff):
         # Cannot find file path of working file
         return
 
-    #FIXME: file_path should be prefixed by repository root
-    file_path = m.group(1)
+    file_path = os.path.join(git_root, m.group(1))
     backup_path = '%s.orig' % file_path
 
     line_changes = {}  # line no. -> sanitized line
@@ -106,8 +105,8 @@ def main():
     head_diff_add = head_diff.iter_change_type('A')
     head_diff_modify = head_diff.iter_change_type('M')
 
-    map(sanitize_diff, head_diff_add)
-    map(sanitize_diff, head_diff_modify)
+    map(lambda i: sanitize_diff(i, git_root), head_diff_add)
+    map(lambda i: sanitize_diff(i, git_root), head_diff_modify)
 
 
 if __name__ == '__main__':
