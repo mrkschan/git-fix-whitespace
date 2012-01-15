@@ -11,12 +11,40 @@ LINE_INFO_REGEX = re.compile(r'\+(\d+),(\d+)')
 PATH_INFO_REGEX = re.compile(r'b/(.+)')
 
 
-def sanitize_line(line):
-    #TODO: Implement line sanitizer
+def blank_at_eol_sanitizer(line):
+    return line.rstrip(' ')
+
+
+def space_before_tab_sanitizer(line):
+    #TODO: implement this
     return line
 
 
-def sanitize_diff(git_diff, git_root):
+def indent_with_non_tab_sanitizer(line):
+    #TODO: implement this
+    return line
+
+
+def tab_in_indent_sanitizer(line):
+    #TODO: implement this
+    return line
+
+
+def blank_at_eof_sanitizer(line):
+    #TODO: implement this
+    return line
+
+
+def cr_at_eol_sanitizer(line):
+    #TODO: implement this
+    return line
+
+
+def sanitize_line(line, sanitizers):
+    return reduce(lambda a, b: b(a), sanitizers, line)
+
+
+def sanitize_diff(git_diff, git_root, sanitizers):
     '''Sanitize lines in diff
 
     Only files add or modify are sanitized.
@@ -47,7 +75,7 @@ def sanitize_diff(git_diff, git_root):
             line_start, line_count = m.group(1), m.group(2)
             line_no = int(line_start)
         elif line.startswith('+'):
-            line_changes[line_no] = sanitize_line(line[1:]) + '\n'
+            line_changes[line_no] = sanitize_line(line[1:], sanitizers) + '\n'
             line_no += 1
         elif line.startswith(' '):
             line_changes[line_no] = line[1:] + '\n'
@@ -102,11 +130,28 @@ def main():
     except:
         pass
 
+    sanitizers = []
+    if config_whitespace.get('trailing-space', False):
+        config_whitespace['blank-at-eol'] = True
+        config_whitespace['blank-at-eof'] = True
+    if config_whitespace.get('blank-at-eol', False):
+        sanitizers.append(blank_at_eol_sanitizer)
+    if config_whitespace.get('space-before-tab', False):
+        sanitizers.append(space_before_tab_sanitizer)
+    if config_whitespace.get('indent-with-non-tab', False):
+        sanitizers.append(indent_with_non_tab_sanitizer)
+    if config_whitespace.get('tab-in-indent', False):
+        sanitizers.append(tab_in_indent_sanitizer)
+    if config_whitespace.get('blank-at-eof', False):
+        sanitizers.append(blank_at_eof_sanitizer)
+    if config_whitespace.get('cr-at-eol', False):
+        sanitizers.append(cr_at_eol_sanitizer)
+
     head_diff = git_repo.head.commit.diff(create_patch=True)
     head_diff_add = head_diff.iter_change_type('A')
     head_diff_modify = head_diff.iter_change_type('M')
 
-    map(lambda i: sanitize_diff(i, git_root),
+    map(lambda i: sanitize_diff(i, git_root, sanitizers),
         itertools.chain(head_diff_add, head_diff_modify))
 
 
