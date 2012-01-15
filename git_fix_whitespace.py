@@ -34,10 +34,11 @@ def sanitize_diff(git_diff):
     if not m:
         # Cannot find file path of working file
         return
+
+    #FIXME: file_path should be prefixed by repository root
     file_path = m.group(1)
-    backup_path = '%s.bak' % file_path
-    print file_path, line_start, line_count
-    print '\n'.join(lines)
+    backup_path = '%s.orig' % file_path
+
 
     os.rename(file_path, backup_path)
     raw_fileobj = open(backup_path, 'rb')
