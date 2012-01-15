@@ -10,6 +10,11 @@ LINE_INFO_REGEX = re.compile(r'\+(\d+),(\d+)')
 PATH_INFO_REGEX = re.compile(r'b/(.+)')
 
 
+def sanitize_line(line):
+    #TODO: Implement line sanitizer
+    return line
+
+
 def sanitize_diff(git_diff):
     '''Sanitize lines in diff
 
@@ -21,14 +26,7 @@ def sanitize_diff(git_diff):
 
     _patch = git_diff.diff.split('\n')
     file_path_info = _patch[1]
-    line_info = _patch[2]
-    lines = _patch[3:]
-
-    m = LINE_INFO_REGEX.search(line_info)
-    if not m:
-        # Cannot find line_start, line_count
-        return
-    line_start, line_count = m.group(1), m.group(2)
+    patch = _patch[2:]
 
     m = PATH_INFO_REGEX.search(file_path_info)
     if not m:
@@ -39,6 +37,21 @@ def sanitize_diff(git_diff):
     file_path = m.group(1)
     backup_path = '%s.orig' % file_path
 
+    line_changes = {}  # line no. -> sanitized line
+    for line in patch:
+        if line.startswith('@@'):
+            m = LINE_INFO_REGEX.search(line)
+            if not m:
+                # Cannot find line_start, line_count
+                return
+            line_start, line_count = m.group(1), m.group(2)
+            line_no = int(line_start)
+        elif line.startswith('+'):
+            line_changes[line_no] = sanitize_line(line[1:]) + '\n'
+            line_no += 1
+        elif line.startswith(' '):
+            line_changes[line_no] = line[1:] + '\n'
+            line_no += 1
 
     os.rename(file_path, backup_path)
     raw_fileobj = open(backup_path, 'rb')
@@ -46,10 +59,9 @@ def sanitize_diff(git_diff):
                          os.fstat(raw_fileobj.fileno()).st_mode)
     working_fileobj = os.fdopen(working_fd, 'wb')
 
-    line_no = 0
+    line_no = 1
     for line in raw_fileobj:
-        # TODO: if line_no == line_start, see if we need to sanitize the line
-        working_fileobj.write(line)
+        working_fileobj.write(line_changes.get(line_no, line))
         line_no += 1
 
     raw_fileobj.close()
