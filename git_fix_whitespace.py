@@ -92,15 +92,15 @@ def main():
     }
     try:
         _config_whitespace = git_config.get('core', 'whitespace')
-    except:
-        _config_whitespace = ''
-    for c in _config_whitespace.split(','):
-        c = c.strip()
+        for c in _config_whitespace.split(','):
+            c = c.strip()
 
-        if c[0] == '-':
-            config_whitespace[c[1:]] = False
-        else:
-            config_whitespace[c] = True
+            if c[0] == '-':
+                config_whitespace[c[1:]] = False
+            else:
+                config_whitespace[c] = True
+    except:
+        pass
 
     head_diff = git_repo.head.commit.diff(create_patch=True)
     head_diff_add = head_diff.iter_change_type('A')
