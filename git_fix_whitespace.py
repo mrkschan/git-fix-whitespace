@@ -11,6 +11,8 @@ from git.cmd import Git
 LINE_INFO_REGEX = re.compile(r'\+(\d+),(\d+)')
 PATH_INFO_REGEX = re.compile(r'b/(.+)')
 
+TAB_WIDTH = 8
+
 
 def blank_at_eol_sanitizer(line):
     return line.rstrip(' ')
@@ -98,6 +100,8 @@ def sanitize_diff(git_diff, git_root, sanitizers):
 
 
 def main():
+    global TAB_WIDTH
+
     git_exec = Git()
     output = git_exec.rev_parse('--show-toplevel', with_extended_output=True,
                                 with_exceptions=False)
@@ -117,7 +121,7 @@ def main():
         'blank-at-eof': False,
         'trailing-space': False,
         'cr-at-eol': False,
-        'tabwidth=<n>': False,  # not supported yet
+        'tabwidth': TAB_WIDTH,  # TODO: Read tab-width from git config
     }
     try:
         _config_whitespace = git_config.get('core', 'whitespace')
@@ -137,6 +141,7 @@ def main():
                  'Cannot enforce both tab-in-indent and indent-with-non-tab.'
         sys.exit(1)
 
+    TAB_WIDTH = ws_config.get('tabwidth')
     sanitizers = []
 
     if ws_config.get('trailing-space', False):
