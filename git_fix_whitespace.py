@@ -109,7 +109,7 @@ def main():
     git_repo = Repo(git_root)
     git_config = git_repo.config_reader()
 
-    config_whitespace = {
+    ws_config = {
         'blank-at-eol': True,
         'space-before-tab': True,
         'indent-with-non-tab': False,
@@ -125,33 +125,40 @@ def main():
             c = c.strip()
 
             if c[0] == '-':
-                config_whitespace[c[1:]] = False
+                ws_config[c[1:]] = False
             else:
-                config_whitespace[c] = True
+                ws_config[c] = True
     except:
         pass
 
-    if config_whitespace.get('tab-in-indent', False) and \
-       config_whitespace.get('indent-with-non-tab', False):
+    if ws_config.get('tab-in-indent', False) and \
+       ws_config.get('indent-with-non-tab', False):
         print >> sys.stderr, \
                  'Cannot enforce both tab-in-indent and indent-with-non-tab.'
         sys.exit(1)
 
     sanitizers = []
-    if config_whitespace.get('trailing-space', False):
-        config_whitespace['blank-at-eol'] = True
-        config_whitespace['blank-at-eof'] = True
-    if config_whitespace.get('blank-at-eol', False):
+
+    if ws_config.get('trailing-space', False):
+        ws_config['blank-at-eol'] = True
+        ws_config['blank-at-eof'] = True
+
+    if ws_config.get('blank-at-eol', False):
         sanitizers.append(blank_at_eol_sanitizer)
-    if config_whitespace.get('space-before-tab', False):
+
+    if ws_config.get('space-before-tab', False):
         sanitizers.append(space_before_tab_sanitizer)
-    if config_whitespace.get('indent-with-non-tab', False):
+
+    if ws_config.get('indent-with-non-tab', False):
         sanitizers.append(indent_with_non_tab_sanitizer)
-    if config_whitespace.get('tab-in-indent', False):
+
+    if ws_config.get('tab-in-indent', False):
         sanitizers.append(tab_in_indent_sanitizer)
-    if config_whitespace.get('blank-at-eof', False):
+
+    if ws_config.get('blank-at-eof', False):
         sanitizers.append(blank_at_eof_sanitizer)
-    if config_whitespace.get('cr-at-eol', False):
+
+    if ws_config.get('cr-at-eol', False):
         sanitizers.append(cr_at_eol_sanitizer)
 
     head_diff = git_repo.head.commit.diff(create_patch=True)
