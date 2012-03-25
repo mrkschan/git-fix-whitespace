@@ -2,6 +2,7 @@
 import itertools
 import os
 import re
+import sys
 
 from git import Repo
 from git.cmd import Git
@@ -102,8 +103,8 @@ def main():
                                 with_exceptions=False)
     err_no, git_root, err_msg = output
     if err_no:
-        print err_msg
-        return
+        print >> sys.stderr, err_msg
+        sys.exit(1)
 
     git_repo = Repo(git_root)
     git_config = git_repo.config_reader()
