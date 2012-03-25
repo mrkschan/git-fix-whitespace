@@ -131,6 +131,12 @@ def main():
     except:
         pass
 
+    if config_whitespace.get('tab-in-indent', False) and \
+       config_whitespace.get('indent-with-non-tab', False):
+        print >> sys.stderr, \
+                 'Cannot enforce both tab-in-indent and indent-with-non-tab.'
+        sys.exit(1)
+
     sanitizers = []
     if config_whitespace.get('trailing-space', False):
         config_whitespace['blank-at-eol'] = True
