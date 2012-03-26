@@ -15,6 +15,7 @@ TAB_WIDTH = 8
 
 
 def blank_at_eol_sanitizer(line):
+    '''Remove trailing whitespaces'''
     return line.rstrip(' ')
 
 
