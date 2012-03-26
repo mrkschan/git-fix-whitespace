@@ -11,6 +11,9 @@ from git.cmd import Git
 LINE_INFO_REGEX = re.compile(r'\+(\d+),(\d+)')
 PATH_INFO_REGEX = re.compile(r'b/(.+)')
 
+LEADING_WS_REGEX = re.compile(r'^(\s*)(.+)$')
+SPACE_BEFORE_TAB_REGEX = re.compile(r' +\t+')
+
 TAB_WIDTH = 8
 
 
@@ -20,8 +23,22 @@ def blank_at_eol_sanitizer(line):
 
 
 def space_before_tab_sanitizer(line):
-    #TODO: implement this
-    return line
+    '''Expand non-leading tab characters into whitespaces
+
+    This sanitizer applies to tab characters used in indentation only.
+    '''
+    m = LEADING_WS_REGEX.match(line)
+    if not m:
+        return line
+
+    leading = m.group(1)
+    trailing = m.group(2)
+
+    m = SPACE_BEFORE_TAB_REGEX.match(leading)
+    if not m:
+        return line
+
+    return leading.expandtabs(TAB_WIDTH) + trailing
 
 
 def indent_with_non_tab_sanitizer(line):
