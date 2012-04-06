@@ -11,7 +11,7 @@ from git.cmd import Git
 LINE_INFO_REGEX = re.compile(r'\+(\d+),(\d+)')
 PATH_INFO_REGEX = re.compile(r'b/(.+)')
 
-LEADING_WS_REGEX = re.compile(r'^(\s*)(.+)$')
+LEADING_WS_REGEX = re.compile(r'^(\s+)([^\s]+)$')
 SPACE_BEFORE_TAB_REGEX = re.compile(r' +\t+')
 
 TAB_WIDTH = 8
