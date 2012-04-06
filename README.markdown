@@ -5,3 +5,6 @@ Sometimes, you may intent to leave trailing space for any reason. For instance, 
 
 Dependency:
 - GitPython
+
+Test:
+$> nosetests tests/
