@@ -23,7 +23,7 @@ def blank_at_eol_sanitizer(line):
 
 
 def space_before_tab_sanitizer(line):
-    '''Expand non-leading tab characters into whitespaces
+    '''Expand non-leading tab characters to whitespaces
 
     This sanitizer applies to tab characters used in indentation only. It does
     not apply to lines with spacing characters only.
