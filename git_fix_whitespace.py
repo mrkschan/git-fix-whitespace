@@ -43,6 +43,11 @@ def space_before_tab_sanitizer(line):
 
 
 def indent_with_non_tab_sanitizer(line):
+    '''Change whitespaces to tab characters according to the TAB_WIDTH setting
+
+    This sanitizer applies to whitespaces used in indentation only. It does
+    not apply to lines with spacing characters only.
+    '''
     #TODO: implement this
     return line
 
