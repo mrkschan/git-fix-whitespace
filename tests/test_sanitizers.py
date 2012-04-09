@@ -88,3 +88,53 @@ def test_space_before_tab_sanitizer():
     now = gfws.space_before_tab_sanitizer(before)
     assert now == after, \
            'before: "%s", after: "%s", now: "%s"' % (before, after, now)
+
+
+def test_indent_with_non_tab_sanitizer():
+    before = ''
+    after = ''
+    now = gfws.indent_with_non_tab_sanitizer(before)
+    assert now == after, \
+           'before: "%s", after: "%s", now: "%s"' % (before, after, now)
+
+    before = ' '
+    after = ' '
+    now = gfws.indent_with_non_tab_sanitizer(before)
+    assert now == after, \
+           'before: "%s", after: "%s", now: "%s"' % (before, after, now)
+
+    before = '  	'
+    after = '  	'
+    now = gfws.indent_with_non_tab_sanitizer(before)
+    assert now == after, \
+           'before: "%s", after: "%s", now: "%s"' % (before, after, now)
+
+    before = ' abc'
+    after = '	abc'
+    now = gfws.indent_with_non_tab_sanitizer(before)
+    assert now == after, \
+           'before: "%s", after: "%s", now: "%s"' % (before, after, now)
+
+    before = '	abc'
+    after = '	abc'
+    now = gfws.indent_with_non_tab_sanitizer(before)
+    assert now == after, \
+           'before: "%s", after: "%s", now: "%s"' % (before, after, now)
+
+    before = ' 	abc'
+    after = '	abc'
+    now = gfws.indent_with_non_tab_sanitizer(before)
+    assert now == after, \
+           'before: "%s", after: "%s", now: "%s"' % (before, after, now)
+
+    before = '	        abc'
+    after = '		abc'
+    now = gfws.indent_with_non_tab_sanitizer(before)
+    assert now == after, \
+           'before: "%s", after: "%s", now: "%s"' % (before, after, now)
+
+    before = 'abc	efg'
+    after = 'abc	efg'
+    now = gfws.indent_with_non_tab_sanitizer(before)
+    assert now == after, \
+           'before: "%s", after: "%s", now: "%s"' % (before, after, now)
