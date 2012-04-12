@@ -48,8 +48,31 @@ def indent_with_non_tab_sanitizer(line):
     This sanitizer applies to whitespaces used in indentation only. It does
     not apply to lines with spacing characters only.
     '''
-    #TODO: implement this
-    return line
+    m = LEADING_WS_REGEX.match(line)
+    if not m:
+        return line
+
+    leading = m.group(1)
+    trailing = m.group(2)
+
+    if not ' ' in leading:
+        return line
+
+    spaces = 0
+    tabs = 0
+    for ws in leading:
+        if ws == ' ':
+            spaces += 1
+        if ws == '\t':
+            spaces = 0
+            tabs += 1
+        if spaces == TAB_WIDTH:
+            spaces = 0
+            tabs += 1
+    if spaces > 0:
+        tabs += 1
+
+    return '\t' * tabs + trailing
 
 
 def tab_in_indent_sanitizer(line):
