@@ -91,6 +91,7 @@ def test_space_before_tab_sanitizer():
 
 
 def test_indent_with_non_tab_sanitizer():
+    # NOTE: The defaut TAB_WIDTH is 8.
     before = ''
     after = ''
     now = gfws.indent_with_non_tab_sanitizer(before)
