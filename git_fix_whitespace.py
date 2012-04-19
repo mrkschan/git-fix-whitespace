@@ -76,8 +76,22 @@ def indent_with_non_tab_sanitizer(line):
 
 
 def tab_in_indent_sanitizer(line):
-    #TODO: implement this
-    return line
+    '''Change tab characters to whitespaces according to the TAB_WIDTH setting
+
+    This sanitizer applies to tab characters used in indentation only. It does
+    not apply to lines with spacing characters only.
+    '''
+    m = LEADING_WS_REGEX.match(line)
+    if not m:
+        return line
+
+    leading = m.group(1)
+    trailing = m.group(2)
+
+    if not '\t' in leading:
+        return line
+
+    return leading.expandtabs(TAB_WIDTH) + trailing
 
 
 def blank_at_eof_sanitizer(line):
