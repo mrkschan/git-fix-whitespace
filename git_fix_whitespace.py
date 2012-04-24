@@ -221,8 +221,8 @@ def main():
     if ws_config.get('tab-in-indent', False):
         sanitizers.append(tab_in_indent_sanitizer)
 
-    if ws_config.get('blank-at-eof', False):
-        sanitizers.append(blank_at_eof_sanitizer)
+#    if ws_config.get('blank-at-eof', False):
+#        sanitizers.append(blank_at_eof_sanitizer)
 
     if ws_config.get('cr-at-eol', False):
         sanitizers.append(cr_at_eol_sanitizer)
