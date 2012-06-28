@@ -220,3 +220,41 @@ def test_tab_in_indent_sanitizer():
     now = gfws.tab_in_indent_sanitizer(before)
     assert now == after, \
            'before: "%s", after: "%s", now: "%s"' % (before, after, now)
+
+
+def test_cr_at_eol_sanitizer():
+    before = ''
+    after = ''
+    now = gfws.cr_at_eol_sanitizer(before)
+    assert now == after, \
+           'before: "%s", after: "%s", now: "%s"' % (before, after, now)
+
+    before = ' '
+    after = ' '
+    now = gfws.cr_at_eol_sanitizer(before)
+    assert now == after, \
+           'before: "%s", after: "%s", now: "%s"' % (before, after, now)
+
+    before = '  \r'
+    after = '  '
+    now = gfws.cr_at_eol_sanitizer(before)
+    assert now == after, \
+           'before: "%s", after: "%s", now: "%s"' % (before, after, now)
+
+    before = 'abc'
+    after = 'abc'
+    now = gfws.cr_at_eol_sanitizer(before)
+    assert now == after, \
+           'before: "%s", after: "%s", now: "%s"' % (before, after, now)
+
+    before = 'abc\r'
+    after = 'abc'
+    now = gfws.cr_at_eol_sanitizer(before)
+    assert now == after, \
+           'before: "%s", after: "%s", now: "%s"' % (before, after, now)
+
+    before = 'abc	efg\r'
+    after = 'abc	efg'
+    now = gfws.cr_at_eol_sanitizer(before)
+    assert now == after, \
+           'before: "%s", after: "%s", now: "%s"' % (before, after, now)
