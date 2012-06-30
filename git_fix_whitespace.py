@@ -100,8 +100,8 @@ def blank_at_eof_sanitizer(line):
 
 
 def cr_at_eol_sanitizer(line):
-    #TODO: implement this
-    return line
+    '''Remove any trailing <CR> character(s)'''
+    return line.rstrip('\r')
 
 
 def sanitize_line(line, sanitizers):
