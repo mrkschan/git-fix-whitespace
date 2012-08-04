@@ -182,17 +182,19 @@ def main():
         'blank-at-eof': False,
         'trailing-space': False,
         'cr-at-eol': False,
-        'tabwidth': TAB_WIDTH,  # TODO: Read tab-width from git config
     }
     try:
         _config_whitespace = git_config.get('core', 'whitespace')
         for c in _config_whitespace.split(','):
             c = c.strip()
 
-            if c[0] == '-':
-                ws_config[c[1:]] = False
+            if 'tabwidth' in c:
+                ws_config['tabwidth'] = int(c.split('=').pop())
             else:
-                ws_config[c] = True
+                if c[0] == '-':  # e.g. -tab-in-indent
+                    ws_config[c[1:]] = False
+                else:
+                    ws_config[c] = True
     except:
         pass
 
