@@ -1,2 +1,5 @@
+# pre-python-2.7 backport
+argparse==1.2.1
+
 # git interface
 GitPython==0.3.2.RC1
