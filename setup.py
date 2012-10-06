@@ -12,7 +12,9 @@ cwd = os.path.abspath(os.path.dirname(__file__))
 def pip_requirements():
     '''Return non-comment lines from requirements.txt'''
     with open(os.path.join(cwd, 'requirements.txt'), 'r') as f:
-        requirements = [i for i in f.readlines() if i.strip()[0] != '#']
+        lines = filter(None, [i.strip() for i in f.readlines()])
+
+    requirements = [i for i in lines if i[0] != '#']
     return requirements
 
 
