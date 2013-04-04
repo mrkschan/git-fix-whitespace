@@ -257,8 +257,16 @@ def main():
                                  'tab-in-indent errors. The default tab '
                                  'width is 8.')
 
+    arg_parser.add_argument('-d', '--debug', action='store_true',
+                            help='Print the whitespace config')
+
     args = arg_parser.parse_args()
     ws_config = vars(args)
+
+    if args.debug:
+        import pprint
+        pp = pprint.PrettyPrinter()
+        pp.pprint(ws_config)
 
     # Prepare appropriate sanitizers
     if ws_config.get('blank-at-eol', False):
