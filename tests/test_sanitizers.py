@@ -1,4 +1,4 @@
-import git_fix_whitespace as gfws
+from git_fix_whitespace import git_fix_whitespace as gfws
 
 
 def test_blank_at_eol_sanitizer():
