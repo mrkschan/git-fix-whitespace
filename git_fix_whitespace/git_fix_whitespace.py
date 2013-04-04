@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+import argparse
+import ast
 import itertools
 import os
 import re
@@ -211,6 +213,54 @@ def main():
         ws_config['blank-at-eol'] = True
         ws_config['blank-at-eof'] = True
 
+    # Allow overrides gitconfig by cli argument
+    arg_parser = argparse.ArgumentParser()
+    arg_parser.set_defaults(**ws_config)
+
+    arg_parser.add_argument('--trailing-space', dest='trailing-space',
+                            type=ast.literal_eval, metavar='True|False',
+                            help='trailing-space is a short-hand to cover '
+                                 'both blank-at-eol and blank-at-eof')
+    arg_parser.add_argument('--blank-at-eol', dest='blank-at-eol',
+                            type=ast.literal_eval, metavar='True|False',
+                            help='treats trailing whitespaces at the end of '
+                                 'the line as an error')
+    arg_parser.add_argument('--space-before-tab', dest='space-before-tab',
+                            type=ast.literal_eval, metavar='True|False',
+                            help='treats a space character that appears '
+                                 'immediately before a tab character in the '
+                                 'initial indent part of the line as an error')
+    arg_parser.add_argument('--indent-with-non-tab',
+                            dest='indent-with-non-tab',
+                            type=ast.literal_eval, metavar='True|False',
+                            help='treats a line that is indented with 8 or '
+                                 'more space characters as an error')
+    arg_parser.add_argument('--tab-in-indent', dest='tab-in-indent',
+                            type=ast.literal_eval, metavar='True|False',
+                            help='treats a tab character in the initial '
+                                 'indent part of the line as an error')
+#    arg_parser.add_argument('--blank-at-eof', dest='blank-at-eof',
+#                            type=ast.literal_eval, metavar='True|False',
+#                            help='treats blank lines added at the end of '
+#                                 'file as an error')
+    arg_parser.add_argument('--cr-at-eol', dest='cr-at-eol',
+                            type=ast.literal_eval, metavar='True|False',
+                            help='treats a carriage-return at the end of '
+                                 'line as part of the line terminator, i.e. '
+                                 'with it, trailing-space does not trigger '
+                                 'if the character before such a '
+                                 'carriage-return is not a whitespace')
+    arg_parser.add_argument('--tabwidth', type=int, metavar='',
+                            help='tells how many character positions a tab '
+                                 'occupies; this is relevant for '
+                                 'indent-with-non-tab and when git fixes '
+                                 'tab-in-indent errors. The default tab '
+                                 'width is 8.')
+
+    args = arg_parser.parse_args()
+    ws_config = vars(args)
+
+    # Prepare appropriate sanitizers
     if ws_config.get('blank-at-eol', False):
         sanitizers.append(blank_at_eol_sanitizer)
 
